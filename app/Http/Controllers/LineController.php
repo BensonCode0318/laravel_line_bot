@@ -19,8 +19,8 @@ class LineController extends Controller
         $this->channel_access_token = env('LINEBOT_TOKEN');
         $this->channel_secret = env('LINEBOT_SECRET');
 
-        $httpClient = new CurlHTTPClient($this->channel_access_token);
-        $this->bot = new LINEBot($httpClient, ['channelSecret'=> $this->channel_secret]);
+        $httpClient   = new CurlHTTPClient($this->channel_access_token);
+        $this->bot    = new LINEBot($httpClient, ['channelSecret' => $this->channel_secret]);
         $this->client = $httpClient;
     }
 
@@ -35,27 +35,27 @@ class LineController extends Controller
 
     public function webhook(Request $request)
     {
-        $bot = $this->bot;
+        $bot       = $this->bot;
         $signature = $request->header(\LINE\LINEBot\Constant\HTTPHeader::LINE_SIGNATURE);
-        $body = $request->getContent();
-        
-        try{
+        $body      = $request->getContent();
+
+        try {
             $events = $bot->parseEventRequest($body, $signature);
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             Log::error($e->getMessage());
         }
 
-        foreach($events as $event){
+        foreach ($events as $event) {
             $replyToken = $event->getReplyToken();
-            if($event instanceof MessageEvent){
+            if ($event instanceof MessageEvent) {
                 $message_type = $event->getMessageType();
                 $text = $event->getText();
                 switch ($message_type) {
                     case 'text':
                         $bot->replyText($replyToken, 'Hello world!');
                         break;
+                }
             }
         }
     }
-}
 }
