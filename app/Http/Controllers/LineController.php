@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Log;
 use LINE\LINEBot;
 use LINE\LINEBot\Event\MessageEvent;
 use LINE\LINEBot\HTTPClient\CurlHTTPClient;
+use GuzzleHttp\Client;
+
 
 class LineController extends Controller
 {
@@ -57,5 +59,28 @@ class LineController extends Controller
                 }
             }
         }
+    }
+
+    public function notify()
+    {
+        $headers = ['Content-Type'=>'application/json','Authorization'=>'Bearer Rn9+S4/8ocj6jEjwwHTtmYkmiSF9uHJ1pVx1TV3071zrjAw5YjthxZkwe7hwdVKIQHmT/kD4NPl6wNbzJ6wmE3l+N8ZgmUSi4B1GbvgfXIWt4Q2rvqIV4KyhPekYQRrGFvagclcaTY4mcSheKx8xgQdB04t89/1O/w1cDnyilFU='];
+        $client = new \GuzzleHttp\Client([
+            
+        ]);
+        $res = $client->request('POST','https://api.line.me/v2/bot/message/push',[
+            'headers'=>[
+                'Authorization'=>'Bearer Rn9+S4/8ocj6jEjwwHTtmYkmiSF9uHJ1pVx1TV3071zrjAw5YjthxZkwe7hwdVKIQHmT/kD4NPl6wNbzJ6wmE3l+N8ZgmUSi4B1GbvgfXIWt4Q2rvqIV4KyhPekYQRrGFvagclcaTY4mcSheKx8xgQdB04t89/1O/w1cDnyilFU=',
+                'Content-Type'=>'application/json'
+            ],
+            'json' =>[
+                'to'=>'U217edfc99fef29581aac21d6e6577f6b',
+                'messages'=>[
+                    [
+                        "type"=>"text",
+                        "text"=>"測試推播"
+                    ]
+                ]
+            ]
+        ]);
     }
 }

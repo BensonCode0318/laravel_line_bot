@@ -17,4 +17,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('/callback','LineController@webhook');
+#Route::post('/callback','LineController@webhook');
