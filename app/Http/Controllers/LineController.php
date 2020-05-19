@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use LINE\LINEBot;
 use LINE\LINEBot\Event\MessageEvent;
+use LINE\LINEBot\Event\JoinEvent;
 use LINE\LINEBot\HTTPClient\CurlHTTPClient;
 use GuzzleHttp\Client;
 
@@ -16,6 +17,7 @@ class LineController extends Controller
     private $channel_secret;
     private $bot;
     private $client;
+    private $groupId;
     public function __construct()
     {
         $this->channel_access_token = env('LINEBOT_TOKEN');
@@ -58,15 +60,26 @@ class LineController extends Controller
                         break;
                 }
             }
+
+            if($event instanceof JoinEvent){
+                $this->groupId = $event->getGroupId();
+                $bot->replyText($replyToken,$this->groupId);
+                $this->notify($this->groupId);
+            }
         }
     }
 
-    public function notify()
+    public function notify($id)
     {
-        $headers = ['Content-Type'=>'application/json','Authorization'=>'Bearer Rn9+S4/8ocj6jEjwwHTtmYkmiSF9uHJ1pVx1TV3071zrjAw5YjthxZkwe7hwdVKIQHmT/kD4NPl6wNbzJ6wmE3l+N8ZgmUSi4B1GbvgfXIWt4Q2rvqIV4KyhPekYQRrGFvagclcaTY4mcSheKx8xgQdB04t89/1O/w1cDnyilFU='];
-        $client = new \GuzzleHttp\Client([
-            
-        ]);
+        $bot = $this->bot;
+        #$id = $this->groupId;
+        #$id = 'Cbcd11a78d69acdaa3b8d47981fe3abd2';
+        $message = '門口有體溫異常的客人喔，請前往查看！';
+        $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($message);
+        $response = $bot->pushMessage($id, $textMessageBuilder);
+
+        /*
+        $client = new \GuzzleHttp\Client();
         $res = $client->request('POST','https://api.line.me/v2/bot/message/push',[
             'headers'=>[
                 'Authorization'=>'Bearer Rn9+S4/8ocj6jEjwwHTtmYkmiSF9uHJ1pVx1TV3071zrjAw5YjthxZkwe7hwdVKIQHmT/kD4NPl6wNbzJ6wmE3l+N8ZgmUSi4B1GbvgfXIWt4Q2rvqIV4KyhPekYQRrGFvagclcaTY4mcSheKx8xgQdB04t89/1O/w1cDnyilFU=',
@@ -82,5 +95,6 @@ class LineController extends Controller
                 ]
             ]
         ]);
+        */
     }
 }
